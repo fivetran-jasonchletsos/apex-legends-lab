@@ -3,9 +3,9 @@ import type { Metadata, Viewport } from "next";
 import { Nav } from "@/components/Nav";
 
 export const metadata: Metadata = {
-  title: "APEX LAB — everything you need to drop hot and win",
+  title: "Apex Lab",
   description:
-    "Apex Legends reference: legends, weapons, loadouts, drop spots, ranked tracker, movement tech, and live patch impact predictions.",
+    "Apex Legends reference — legends, weapons, loadouts, maps, ranked, training, tips.",
 };
 
 export const viewport: Viewport = {

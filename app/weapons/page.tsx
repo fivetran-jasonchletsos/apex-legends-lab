@@ -84,7 +84,7 @@ export default function WeaponsPage() {
         </div>
       </Section>
 
-      <Section title="HOP-UPS" subtitle="The attachments that transform weapons.">
+      <Section title="HOP-UPS" subtitle="Per-weapon attachment modifiers and what they unlock.">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {HOP_UPS.map((h) => (
             <Card key={h.id}>

@@ -24,31 +24,30 @@ export default function Home() {
     <>
       {/* HERO */}
       <HudFrame className="mb-8 overflow-hidden">
-        <div className="hud-scan absolute inset-0 opacity-30" />
         <div className="relative p-5 md:p-8">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-plasma">
-            <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-blood" />
-            Season 29 · Overclocked · Live
+            <span className="inline-block h-2 w-2 rounded-full bg-blood" />
+            Season 29 · Overclocked
           </div>
           <h1 className="mt-3 font-display text-5xl leading-none tracking-[0.04em] text-ink md:text-7xl">
-            EVERYTHING YOU NEED <span className="text-blood">TO DROP HOT</span>
+            APEX <span className="text-blood">LAB</span>
           </h1>
           <p className="mt-4 max-w-2xl text-sm text-muted md:text-base">
-            Apex Legends reference + live patch impact. Legends, weapons, drop spots, ranked,
-            movement tech — all in one place. Built on the same ODI stack as the 2K LAB.
+            Apex Legends reference. {LEGENDS.length} legends, {WEAPONS_WITH_TTK.length} weapons,
+            5 maps, ranked tracker, training drills, movement tech.
           </p>
 
           <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
-            <Stat label="Legends" value={LEGENDS.length} hint="Season 29 roster" />
-            <Stat label="Weapons" value={WEAPONS_WITH_TTK.length} hint="All ammo classes" tone="gold" />
-            <Stat label="S-tier picks" value={sTier.length + sWeapons.length} hint="Meta this split" tone="blood" />
-            <Stat label="Meta deltas" value={preds.length} hint="Predicted impact" tone="plasma" />
+            <Stat label="Legends" value={LEGENDS.length} hint="S29 roster" />
+            <Stat label="Weapons" value={WEAPONS_WITH_TTK.length} hint="All ammo types" tone="gold" />
+            <Stat label="S-tier" value={sTier.length + sWeapons.length} hint="Legends + weapons" tone="blood" />
+            <Stat label="Meta deltas" value={preds.length} hint="Tracked subjects" tone="plasma" />
           </div>
         </div>
       </HudFrame>
 
       {/* QUICK LINKS */}
-      <Section title="JUMP IN" subtitle="Pick a page — everything saves locally as you use it.">
+      <Section title="PAGES" subtitle="State (favorites, RP, learned tips) is stored in your browser.">
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {QUICK_LINKS.map((q) => (
             <Link
@@ -67,7 +66,7 @@ export default function Home() {
       {/* S-TIER LEGENDS */}
       <Section
         title="S-TIER LEGENDS"
-        subtitle="Picked by Predator stacks. Updated each patch."
+        subtitle={`${sTier.length} legends at S-tier this split.`}
         right={
           <Link href="/legends" className="text-xs font-bold uppercase tracking-wider text-blood hover:underline">
             See all →
@@ -102,7 +101,7 @@ export default function Home() {
       {/* PULSE CALLOUT */}
       <Section
         title="META PULSE"
-        subtitle="Live patch + community sentiment → predicted tier deltas."
+        subtitle="Predicted tier deltas from patch notes + community sentiment."
         right={
           <Link href="/pulse" className="text-xs font-bold uppercase tracking-wider text-plasma hover:underline">
             Full pulse →
@@ -140,7 +139,7 @@ export default function Home() {
       {/* WEAPONS QUICK */}
       <Section
         title="S-TIER WEAPONS"
-        subtitle="Best in slot — the picks that win fights."
+        subtitle={`${sWeapons.length} weapons at S-tier this split.`}
         right={
           <Link href="/weapons" className="text-xs font-bold uppercase tracking-wider text-gold hover:underline">
             All weapons →
