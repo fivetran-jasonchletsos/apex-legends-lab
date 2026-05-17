@@ -1,0 +1,45 @@
+name: apex_legends_lab
+version: 1.0.0
+config-version: 2
+
+profile: apex_legends_lab
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# Data lives in MDLS (Managed Data Lake Service) as Iceberg tables in S3,
+# registered in a shared catalog (Glue or Polaris). Fivetran lands raw rows
+# into `bronze_<source>` schemas. This dbt project builds silver (staging +
+# intermediate) and gold (marts) ON TOP of those bronze Iceberg tables.
+#
+# Primary engine: Snowflake-on-Iceberg (target: snowflake_iceberg).
+# Athena retained as alternative profile for multi-engine demos.
+models:
+  apex_legends_lab:
+    +materialized: view
+    staging:
+      +materialized: view
+      +schema: silver_stg
+      +tags: ["staging", "silver"]
+    intermediate:
+      +materialized: table
+      +schema: silver_int
+      +tags: ["intermediate", "silver"]
+    marts:
+      +materialized: table
+      +schema: gold
+      +tags: ["marts", "gold"]
+
+vars:
+  recent_window_matches: 10
+  recent_window_days: 7
+  sentiment_window_days: 7

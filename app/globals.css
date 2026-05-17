@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Teko:wght@500;600;700&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root { color-scheme: dark; }
+
+* { -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  background: #08090B;
+  color: #F5F5F7;
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100vh;
+  background-image:
+    radial-gradient(900px circle at 8% -8%, rgba(230,57,70,0.07), transparent 50%),
+    radial-gradient(700px circle at 92% 12%, rgba(34,211,238,0.05), transparent 50%),
+    radial-gradient(600px circle at 60% 110%, rgba(244,180,0,0.04), transparent 50%);
+  background-attachment: fixed;
+}
+
+.num { font-feature-settings: "tnum" 1, "lnum" 1; font-variant-numeric: tabular-nums; }
+
+.scroll-x { scrollbar-width: none; }
+.scroll-x::-webkit-scrollbar { display: none; }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #08090B; }
+::-webkit-scrollbar-thumb { background: #252934; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #E63946; }
+
+@media (max-width: 640px) {
+  html { font-size: 15px; }
+}
+
+/* prevent layout shift while custom fonts load */
+.font-display { font-display: swap; letter-spacing: 0.02em; }
+
+/* mobile-safe horizontal scroll fix */
+html, body { overflow-x: hidden; }
+
+/* iOS safe-area aware bottom padding for fixed nav */
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+.pt-safe { padding-top: env(safe-area-inset-top); }
+
+/* HUD-style scanline accent */
+.hud-scan {
+  position: relative;
+  overflow: hidden;
+}
+.hud-scan::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(34,211,238,0.18) 50%, transparent 100%);
+  animation: scan 2.5s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes scan {
+  0% { transform: translateY(-100%); opacity: 0.6; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
+/* hex-style background for hero cards */
+.bg-hex {
+  background-image:
+    radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 18px 18px;
+}

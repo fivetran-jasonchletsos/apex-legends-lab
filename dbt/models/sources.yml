@@ -1,0 +1,113 @@
+# ============================================================
+# Source definitions for apex_legends_lab.
+#
+# MDLS (Managed Data Lake Service) landing pattern:
+#
+#   Fivetran custom connectors -> S3 (Parquet/Iceberg) ->
+#   shared catalog (Polaris or Glue) -> bronze_<source> schemas.
+#
+# These bronze schemas are catalog-registered Iceberg tables.
+# The SAME bronze tables are queryable by every engine bound
+# to the catalog (Snowflake-on-Iceberg primary; Athena, Trino,
+# Databricks, Spark alternatives). dbt only cares about
+# (schema, table) names; engine selection lives in profiles.yml.
+#
+# Each source declares `_fivetran_synced` as the freshness
+# field.
+# ============================================================
+
+version: 2
+
+sources:
+  - name: apexlegendsapi
+    description: "mozambiquehe.re Apex Legends REST API, landed by the apexlegendsapi custom Fivetran connector into MDLS as Iceberg."
+    schema: bronze_apexlegendsapi
+    loaded_at_field: _fivetran_synced
+    freshness:
+      warn_after:  { count: 30,  period: minute }
+      error_after: { count: 120, period: minute }
+    tables:
+      - name: player_profile
+        columns:
+          - name: player_uid
+            tests: [not_null]
+      - name: ranked_history
+        columns:
+          - name: player_uid
+            tests: [not_null]
+      - name: map_rotation
+      - name: crafting_rotation
+
+  - name: tracker_gg
+    description: "tracker.gg Apex public API stats, landed by the tracker_gg custom Fivetran connector into MDLS as Iceberg."
+    schema: bronze_tracker_gg
+    loaded_at_field: _fivetran_synced
+    freshness:
+      warn_after:  { count: 60,  period: minute }
+      error_after: { count: 240, period: minute }
+    tables:
+      - name: player_stats
+        columns:
+          - name: player_id
+            tests: [unique, not_null]
+      - name: legend_stats
+      - name: session_history
+
+  - name: als_predator
+    description: "Daily snapshot of the top 750 Predator leaderboard, landed into MDLS as Iceberg."
+    schema: bronze_als_predator
+    loaded_at_field: _fivetran_synced
+    freshness:
+      warn_after:  { count: 6,  period: hour }
+      error_after: { count: 24, period: hour }
+    tables:
+      - name: predator_leaderboard
+      - name: rp_history
+
+  - name: reddit_apex
+    description: "r/apexlegends + r/CompetitiveApex posts and comments via Reddit OAuth, landed into MDLS as Iceberg."
+    schema: bronze_reddit_apex
+    loaded_at_field: _fivetran_synced
+    freshness:
+      warn_after:  { count: 60,  period: minute }
+      error_after: { count: 240, period: minute }
+    tables:
+      - name: posts
+        columns:
+          - name: id
+            tests: [unique, not_null]
+      - name: comments
+        columns:
+          - name: id
+            tests: [unique, not_null]
+
+  - name: ea_news
+    description: "EA / Respawn official news + patch notes JSON feed, landed into MDLS as Iceberg."
+    schema: bronze_ea_news
+    loaded_at_field: _fivetran_synced
+    freshness:
+      warn_after:  { count: 6,  period: hour }
+      error_after: { count: 48, period: hour }
+    tables:
+      - name: articles
+        columns:
+          - name: id
+            tests: [unique, not_null]
+      - name: patch_notes
+
+  - name: streamer_loadouts
+    description: "Twitch top Apex streamers (sessions + observed legend picks), landed into MDLS as Iceberg."
+    schema: bronze_streamer_loadouts
+    loaded_at_field: _fivetran_synced
+    freshness:
+      warn_after:  { count: 90,  period: minute }
+      error_after: { count: 240, period: minute }
+    tables:
+      - name: streamer_sessions
+        columns:
+          - name: session_id
+            tests: [unique, not_null]
+      - name: loadout_observations
+        columns:
+          - name: observation_id
+            tests: [unique, not_null]

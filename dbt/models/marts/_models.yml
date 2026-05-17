@@ -1,0 +1,31 @@
+version: 2
+
+models:
+  - name: mart_meta_predictions
+    description: "Predicted tier delta per legend/weapon, with drivers + confidence. Drives /pulse."
+    columns:
+      - name: subject_type
+        tests: [not_null, accepted_values: { values: ['legend', 'weapon'] }]
+      - name: subject_id
+        tests: [not_null]
+      - name: predicted_delta
+        tests: [not_null]
+      - name: confidence
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0 AND <= 1"
+
+  - name: mart_player_360
+    description: "Aggregated player view — tier, top legend, recent form, season totals."
+    columns:
+      - name: player_id
+        tests: [unique, not_null]
+      - name: platform
+        tests: [not_null]
+
+  - name: mart_map_rotation_active
+    description: "Currently-active map per playlist with countdown to next swap."
+    columns:
+      - name: playlist
+        tests: [unique, not_null]

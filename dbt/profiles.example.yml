@@ -1,0 +1,66 @@
+# ============================================================
+# dbt profile: apex_legends_lab
+#
+# Data sources are Iceberg tables in MDLS (Managed Data Lake
+# Service): Fivetran lands rows into S3 (Parquet/Iceberg) and
+# registers them in a shared catalog (Glue or Polaris). The SAME
+# bronze tables are queryable from multiple engines.
+#
+# Copy this file to ~/.dbt/profiles.yml and fill in real values.
+#
+# Two engine targets are provided. They read the IDENTICAL
+# bronze_<source> Iceberg tables; only the compute changes:
+#
+#   snowflake_iceberg   primary target. Snowflake reads Iceberg
+#                       via an external volume + catalog
+#                       integration pointed at Polaris (or Glue).
+#   athena_iceberg      alternative target. dbt-athena-community
+#                       on the same Glue catalog + S3 bucket.
+#
+# Combined with dbt_project.yml's `+schema:` overrides, models
+# land in: silver_stg / silver_int / gold.
+# ============================================================
+
+apex_legends_lab:
+  target: snowflake_iceberg
+  outputs:
+
+    # ----------------------------------------------------------
+    # Primary: Snowflake-on-Iceberg.
+    # External volume points at the same S3 bucket MDLS writes
+    # to. Catalog integration is a Polaris (or Glue) Iceberg
+    # catalog, so Snowflake reads the exact same table files
+    # Athena does.
+    # ----------------------------------------------------------
+    snowflake_iceberg:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT', '<your_account>.us-east-1') }}"
+      user: "{{ env_var('SNOWFLAKE_USER', '<your_user>') }}"
+      password: "{{ env_var('SNOWFLAKE_PASSWORD', '<your_password>') }}"
+      role: "{{ env_var('SNOWFLAKE_ROLE', 'APEX_LEGENDS_LAB_DEV') }}"
+      database: "{{ env_var('SNOWFLAKE_DATABASE', 'APEX_LEGENDS_LAB') }}"
+      warehouse: "{{ env_var('SNOWFLAKE_WAREHOUSE', 'APEX_LEGENDS_LAB_WH') }}"
+      schema: apex
+      threads: 8
+      client_session_keep_alive: false
+      query_tag: dbt-apex-legends-lab
+      external_volume: "{{ env_var('SNOWFLAKE_EXTERNAL_VOLUME', 'mdls_iceberg_vol') }}"
+      catalog: "{{ env_var('SNOWFLAKE_CATALOG_INTEGRATION', 'mdls_polaris_catalog') }}"
+      base_location_prefix: "apex_legends_lab/"
+
+    # ----------------------------------------------------------
+    # Alternative: Athena on the same catalog + S3 bucket.
+    # AWS credentials follow the standard boto3 chain
+    # (env vars / shared config / IAM role).
+    # ----------------------------------------------------------
+    athena_iceberg:
+      type: athena
+      region_name: "{{ env_var('AWS_REGION', 'us-east-1') }}"
+      database: awsdatacatalog
+      schema: apex_legends_lab
+      s3_staging_dir: "s3://{{ env_var('MDLS_BUCKET', 'mdls-apex-legends-lab') }}/athena-results/"
+      s3_data_dir: "s3://{{ env_var('MDLS_BUCKET', 'mdls-apex-legends-lab') }}/dbt/"
+      s3_data_naming: schema_table
+      work_group: "{{ env_var('ATHENA_WORKGROUP', 'apex_legends_lab') }}"
+      threads: 4
+      num_retries: 2
